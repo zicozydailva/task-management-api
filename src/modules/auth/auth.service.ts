@@ -2,15 +2,23 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from '../user/schema/user.entity';
 import { Model } from 'mongoose';
-import { CreateUserDto } from '../user/dto/user.dto';
+import { CreateUserDto, LoginDto } from '../user/dto/user.dto';
 import { EncryptHelper, ErrorHelper } from 'src/core/helpers';
-import { EMAIL_ALREADY_EXISTS } from 'src/core/constants';
+import {
+  EMAIL_ALREADY_EXISTS,
+  INVALID_EMAIL_OR_PASSWORD,
+} from 'src/core/constants';
+import { IUser } from 'src/core/interfaces';
+import { UserSessionService } from 'src/global/user-session/service';
+import { TokenHelper } from 'src/lib/utils/token/token.utils';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userRepo: Model<User>,
     private encryptHelper: EncryptHelper,
+    private tokenHelper: TokenHelper,
+    private userSessionService: UserSessionService,
   ) {}
 
   async createUser(payload: CreateUserDto): Promise<User> {
@@ -32,5 +40,56 @@ export class AuthService {
     });
 
     return user.toObject();
+  }
+
+  async login(params: LoginDto) {
+    try {
+      const { email, password } = params;
+
+      const user = await this.validateUser(email, password);
+
+      const tokenInfo = await this.generateUserSession(user);
+
+      await this.userRepo.updateOne({ _id: user._id });
+
+      return {
+        token: tokenInfo,
+        user,
+      };
+    } catch (error) {
+      ErrorHelper.BadRequestException(error);
+    }
+  }
+
+  private async validateUser(email: string, password: string): Promise<IUser> {
+    const emailQuery = {
+      email: email.toLowerCase(),
+    };
+
+    const user = await this.userRepo.findOne(emailQuery);
+
+    if (!user) {
+      ErrorHelper.BadRequestException(INVALID_EMAIL_OR_PASSWORD);
+    }
+
+    const passwordMatch = await this.encryptHelper.compare(
+      password,
+      user.password,
+    );
+    if (!passwordMatch) {
+      ErrorHelper.BadRequestException(INVALID_EMAIL_OR_PASSWORD);
+    }
+
+    return user.toObject();
+  }
+
+  private async generateUserSession(user: IUser) {
+    const tokenInfo = this.tokenHelper.generate(user);
+
+    await this.userSessionService.create(user, {
+      sessionId: tokenInfo.sessionId,
+    });
+
+    return tokenInfo;
   }
 }

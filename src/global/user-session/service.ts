@@ -13,7 +13,7 @@ export class UserSessionService {
     payload: IUser,
     data: {
       sessionId: string;
-      rememberMe: boolean;
+      rememberMe?: boolean;
     },
   ) {
     const key = `session:${payload._id}`;
