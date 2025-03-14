@@ -4,11 +4,13 @@ import { GlobalModule } from './global/global.module';
 import { SecretsModule } from './global/secrets/module';
 import { SecretsService } from './global/secrets/service';
 import { TaskModule } from './modules/task/task.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
     GlobalModule,
     TaskModule,
+    UserModule,
     MongooseModule.forRootAsync({
       imports: [SecretsModule],
       inject: [SecretsService],
