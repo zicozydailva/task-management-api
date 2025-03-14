@@ -33,8 +33,21 @@ or, if using npm: npm install
    MONGO_URI=
 
 5. **Running the Application**:
-   Commands for running in development
-   . npm run start:dev
+  # development
+$ npm run start
 
-production
-. npm run start:prod
+# watch mode
+$ npm run start:dev
+
+# production mode
+$ npm run start:prod
+
+# Run Tests
+# unit tests
+$ npm run test
+
+# e2e tests
+$ npm run test:e2e
+
+# test coverage
+$ npm run test:cov
