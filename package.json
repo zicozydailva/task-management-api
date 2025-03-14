@@ -2,7 +2,10 @@
   "name": "task-management-api",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": {
+    "name": "Ogbu Ezekiel",
+    "email": "Zicozydasilva70@gmail.com"
+  },
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -21,17 +24,8 @@
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
-    "@nestjs/config": "^4.0.1",
     "@nestjs/core": "^11.0.1",
-    "@nestjs/mongoose": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
-    "axios": "^1.8.3",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.1",
-    "cookie-parser": "^1.4.7",
-    "dotenv": "^16.4.7",
-    "express": "^5.0.1",
-    "mongoose": "^8.12.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
