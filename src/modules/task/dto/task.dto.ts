@@ -1,4 +1,4 @@
-import { IsEnum, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { TaskStatus } from '../schema/task.entity';
 
 export class CreateTaskDto {
@@ -9,10 +9,6 @@ export class CreateTaskDto {
   @IsString()
   @IsNotEmpty()
   description: string;
-
-  @IsMongoId()
-  @IsNotEmpty()
-  user: string;
 }
 
 export class UpdateTaskStatusDto {

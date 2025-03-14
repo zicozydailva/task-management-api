@@ -11,16 +11,18 @@ import {
 import { TaskService } from './task.service';
 import { CreateTaskDto, UpdateTaskStatusDto } from './dto/task.dto';
 import { AuthGuard } from 'src/lib/utils/guards';
+import { IUser } from 'src/core/interfaces';
+import { User as UserDecorator } from 'src/lib/utils/decorators';
 
 @Controller('task')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
-  // TODO: personalised tasks
+  // NOTE: personalised tasks
   @UseGuards(AuthGuard)
   @Get()
-  async getAllTasks() {
-    const res = await this.taskService.getAllTasks();
+  async getAllTasks(@UserDecorator() user: IUser) {
+    const res = await this.taskService.getAllTasks(user._id);
 
     return {
       data: res,
@@ -31,8 +33,11 @@ export class TaskController {
 
   @UseGuards(AuthGuard)
   @Post()
-  async createTask(@Body() createTaskDto: CreateTaskDto) {
-    const res = await this.taskService.createTask(createTaskDto);
+  async createTask(
+    @UserDecorator() user: IUser,
+    @Body() createTaskDto: CreateTaskDto,
+  ) {
+    const res = await this.taskService.createTask(user._id, createTaskDto);
 
     return {
       data: res,
@@ -44,10 +49,12 @@ export class TaskController {
   @UseGuards(AuthGuard)
   @Patch(':id/status')
   async updateTaskStatus(
+    @UserDecorator() user: IUser,
     @Param('id') id: string,
     @Body() updateTaskStatusDto: UpdateTaskStatusDto,
   ) {
     const res = await this.taskService.updateTaskStatus(
+      user._id,
       id,
       updateTaskStatusDto,
     );
@@ -61,8 +68,8 @@ export class TaskController {
 
   @UseGuards(AuthGuard)
   @Delete(':id')
-  async deleteTask(@Param('id') id: string) {
-    const res = await this.taskService.deleteTask(id);
+  async deleteTask(@UserDecorator() user: IUser, @Param('id') id: string) {
+    const res = await this.taskService.deleteTask(user._id, id);
 
     return {
       data: res,

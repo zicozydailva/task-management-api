@@ -10,24 +10,28 @@ import { TASK_NOT_FOUND } from 'src/core/constants';
 export class TaskService {
   constructor(@InjectModel(Task.name) private taskRepo: Model<TaskDocument>) {}
 
-  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+  async createTask(
+    userId: string,
+    createTaskDto: CreateTaskDto,
+  ): Promise<Task> {
     try {
-      return await this.taskRepo.create(createTaskDto);
+      return await this.taskRepo.create({ ...createTaskDto, user: userId });
     } catch (error) {
       ErrorHelper.BadRequestException(error);
     }
   }
 
-  async getAllTasks(): Promise<Task[]> {
-    return await this.taskRepo.find({});
+  async getAllTasks(userId: string): Promise<Task[]> {
+    return await this.taskRepo.find({ user: userId });
   }
 
   async updateTaskStatus(
+    userId: string,
     id: string,
     updateTaskStatusDto: UpdateTaskStatusDto,
   ): Promise<Task> {
     try {
-      const task = await this.taskRepo.findById(id);
+      const task = await this.taskRepo.findOne({ _id: id, user: userId });
       if (!task) {
         ErrorHelper.NotFoundException(TASK_NOT_FOUND);
       }
@@ -38,8 +42,10 @@ export class TaskService {
     }
   }
 
-  async deleteTask(id: string): Promise<boolean> {
-    const result = await this.taskRepo.deleteOne({ _id: id }).exec();
+  async deleteTask(userId: string, id: string): Promise<boolean> {
+    const result = await this.taskRepo
+      .deleteOne({ _id: id, user: userId })
+      .exec();
 
     if (result.deletedCount === 0) {
       ErrorHelper.NotFoundException(TASK_NOT_FOUND);
