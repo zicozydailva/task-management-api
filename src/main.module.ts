@@ -5,10 +5,12 @@ import { SecretsModule } from './global/secrets/module';
 import { SecretsService } from './global/secrets/service';
 import { TaskModule } from './modules/task/task.module';
 import { UserModule } from './modules/user/user.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
     GlobalModule,
+    AuthModule,
     TaskModule,
     UserModule,
     MongooseModule.forRootAsync({
