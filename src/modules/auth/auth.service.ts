@@ -21,25 +21,18 @@ export class AuthService {
     private userSessionService: UserSessionService,
   ) {}
 
-  async createUser(payload: CreateUserDto): Promise<User> {
-    const { email } = payload;
-    const emailQuery = {
-      email: email.toLowerCase(),
-    };
+  async signup(payload: CreateUserDto) {
+    try {
+      const user = await this.createUser(payload);
+      const tokenInfo = await this.generateUserSession(user);
 
-    const emailExist = await this.userRepo.findOne(emailQuery);
-
-    if (emailExist) {
-      ErrorHelper.BadRequestException(EMAIL_ALREADY_EXISTS);
+      return {
+        token: tokenInfo,
+        user: user,
+      };
+    } catch (error) {
+      ErrorHelper.ConflictException(error);
     }
-
-    const user = await this.userRepo.create({
-      ...payload,
-      password: await this.encryptHelper.hash(payload.password),
-      email: email.toLowerCase(),
-    });
-
-    return user.toObject();
   }
 
   async login(params: LoginDto) {
@@ -59,6 +52,27 @@ export class AuthService {
     } catch (error) {
       ErrorHelper.BadRequestException(error);
     }
+  }
+
+  private async createUser(payload: CreateUserDto): Promise<User> {
+    const { email } = payload;
+    const emailQuery = {
+      email: email.toLowerCase(),
+    };
+
+    const emailExist = await this.userRepo.findOne(emailQuery);
+
+    if (emailExist) {
+      ErrorHelper.BadRequestException(EMAIL_ALREADY_EXISTS);
+    }
+
+    const user = await this.userRepo.create({
+      ...payload,
+      password: await this.encryptHelper.hash(payload.password),
+      email: email.toLowerCase(),
+    });
+
+    return user.toObject();
   }
 
   private async validateUser(email: string, password: string): Promise<IUser> {
