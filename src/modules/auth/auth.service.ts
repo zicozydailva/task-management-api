@@ -106,4 +106,12 @@ export class AuthService {
 
     return tokenInfo;
   }
+
+  async logout(userId: string) {
+    await this.userSessionService.delete(userId);
+
+    return {
+      success: true,
+    };
+  }
 }
