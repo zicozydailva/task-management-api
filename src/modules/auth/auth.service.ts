@@ -24,7 +24,7 @@ export class AuthService {
   async signup(payload: CreateUserDto) {
     try {
       const user = await this.createUser(payload);
-      const tokenInfo = await this.generateUserSession(user.toObject());
+      const tokenInfo = await this.generateUserSession(user as IUser);
 
       return {
         token: tokenInfo,
@@ -41,7 +41,7 @@ export class AuthService {
 
       const user = await this.validateUser(email, password);
 
-      const tokenInfo = await this.generateUserSession(user.toObject());
+      const tokenInfo = await this.generateUserSession(user as IUser);
 
       await this.userRepo.updateOne({ _id: user._id });
 
