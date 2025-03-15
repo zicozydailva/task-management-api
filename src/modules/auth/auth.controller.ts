@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -18,6 +17,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('/signup')
+  @HttpCode(HttpStatus.CREATED)
   async register(@Body() body: CreateUserDto) {
     const data = await this.authService.signup(body);
 
@@ -28,6 +28,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: LoginDto) {
     const data = await this.authService.login(loginDto);
 
@@ -39,7 +40,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
-  @Get('/logout')
+  @Post('/logout')
   async logout(@UserDecorator() user: IUser) {
     const data = await this.authService.logout(user._id);
 
