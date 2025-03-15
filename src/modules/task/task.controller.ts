@@ -7,12 +7,14 @@ import {
   Body,
   Param,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto, UpdateTaskStatusDto } from './dto/task.dto';
 import { AuthGuard } from 'src/lib/utils/guards';
 import { IUser } from 'src/core/interfaces';
 import { User as UserDecorator } from 'src/lib/utils/decorators';
+import { PaginationDto } from 'src/lib/utils/dto';
 
 @Controller('task')
 export class TaskController {
@@ -21,8 +23,12 @@ export class TaskController {
   // NOTE: personalised tasks
   @UseGuards(AuthGuard)
   @Get()
-  async getAllTasks(@UserDecorator() user: IUser) {
-    const res = await this.taskService.getAllTasks(user._id);
+  async getAllTasks(
+    @UserDecorator() user: IUser,
+    @Query() paginationQuery: PaginationDto,
+  ) {
+    console.log('paginationQuery', paginationQuery);
+    const res = await this.taskService.getAllTasks(user._id, paginationQuery);
 
     return {
       data: res,

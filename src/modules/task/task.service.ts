@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { CreateTaskDto, UpdateTaskStatusDto } from './dto/task.dto';
 import { ErrorHelper } from 'src/core/helpers';
 import { TASK_NOT_FOUND } from 'src/core/constants';
+import { PaginationDto, PaginationResultDto } from 'src/lib/utils/dto';
 
 @Injectable()
 export class TaskService {
@@ -21,8 +22,22 @@ export class TaskService {
     }
   }
 
-  async getAllTasks(userId: string): Promise<Task[]> {
-    return await this.taskRepo.find({ user: userId });
+  async getAllTasks(userId: string, paginationQuery: PaginationDto) {
+    try {
+      const { limit, page } = paginationQuery;
+      const skip = (page - 1) * limit;
+
+      const tasks = await this.taskRepo
+        .find({ user: userId })
+        .skip(skip)
+        .limit(limit);
+
+      const count = await this.taskRepo.countDocuments({ user: userId });
+
+      return new PaginationResultDto(tasks, count, { limit, page });
+    } catch (error) {
+      ErrorHelper.BadRequestException(error);
+    }
   }
 
   async updateTaskStatus(
