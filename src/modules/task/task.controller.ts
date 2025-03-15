@@ -27,7 +27,6 @@ export class TaskController {
     @UserDecorator() user: IUser,
     @Query() paginationQuery: PaginationDto,
   ) {
-    console.log('paginationQuery', paginationQuery);
     const res = await this.taskService.getAllTasks(user._id, paginationQuery);
 
     return {
