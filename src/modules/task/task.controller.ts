@@ -82,4 +82,15 @@ export class TaskController {
       success: true,
     };
   }
+
+  @Get('status-counts')
+  async getTaskStatusCounts() {
+    const res = await this.taskService.getTaskStatusCounts();
+
+    return {
+      data: res,
+      message: 'Task Status Count Fetched Successfully',
+      success: true,
+    };
+  }
 }

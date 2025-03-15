@@ -68,4 +68,32 @@ export class TaskService {
 
     return true;
   }
+
+  async getTaskStatusCounts() {
+    const statusCounts = await this.taskRepo.aggregate([
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Convert result into a structured object
+    const formattedCounts = statusCounts.reduce(
+      (acc, { _id, count }) => {
+        acc[_id] = count;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
+    return {
+      totalTasks: Object.values(formattedCounts).reduce(
+        (sum: number, count: number) => sum + count,
+        0,
+      ),
+      statusCounts: formattedCounts,
+    };
+  }
 }
