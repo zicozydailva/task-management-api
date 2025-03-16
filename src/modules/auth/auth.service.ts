@@ -43,8 +43,6 @@ export class AuthService {
 
       const tokenInfo = await this.generateUserSession(user as IUser);
 
-      await this.userRepo.updateOne({ _id: user._id });
-
       return {
         token: tokenInfo,
         user,
