@@ -83,9 +83,10 @@ export class TaskController {
     };
   }
 
+  @UseGuards(AuthGuard)
   @Get('status-counts')
-  async getTaskStatusCounts() {
-    const res = await this.taskService.getTaskStatusCounts();
+  async getTaskStatusCounts(@UserDecorator() user: IUser) {
+    const res = await this.taskService.getTaskStatusCounts(user._id);
 
     return {
       data: res,
