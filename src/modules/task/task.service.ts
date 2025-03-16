@@ -71,7 +71,7 @@ export class TaskService {
 
   async getTaskStatusCounts(userId: string) {
     const statusCounts = await this.taskRepo.aggregate([
-      { $match: { userId } },
+      { $match: { user: userId } },
       {
         $group: {
           _id: '$status',
