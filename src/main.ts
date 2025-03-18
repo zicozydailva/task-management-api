@@ -20,13 +20,9 @@ async function bootstrap() {
   const { PORT } = app.get<SecretsService>(SecretsService);
 
   app.enableCors({
-    origin: [
-      'https://task-management-app-dewrks.netlify.app/',
-      'http://localhost:5173',
-    ],
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
     exposedHeaders: ['Authorization'],
   });
   app.use(cookieParser());
