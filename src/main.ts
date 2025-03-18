@@ -14,7 +14,6 @@ import { HttpExceptionFilter } from './lib/utils/filters';
 async function bootstrap() {
   const app = await NestFactory.create(MainModule, {
     bufferLogs: true,
-    cors: true,
   });
 
   const { PORT } = app.get<SecretsService>(SecretsService);
